@@ -22,6 +22,7 @@ public class ZoekenOpNaamServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String VIEW = "/WEB-INF/JSP/artikels/zoekenopnaam.jsp";
 	private final transient ArtikelService artikelService = new ArtikelService();
+	private static final int AANTAL_RIJEN = 20;
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,10 +31,19 @@ public class ZoekenOpNaamServlet extends HttpServlet {
 		if (request.getQueryString() != null) {
 			Map<String, String> fouten = new HashMap<>();
 			String naam = request.getParameter("naam");
-			if (naam.isEmpty() || naam == null) {
+			if (naam.trim().isEmpty() || naam == null) {
 				fouten.put("naam", "verplicht");
 			}
-			List<Artikel> artikels = artikelService.findByNaam(naam);
+			int vanafRij = request.getParameter("vanafRij") 
+					== null ? 0 : Integer.parseInt(request.getParameter("vanafRij"));
+			request.setAttribute("vanafRij", vanafRij);
+			request.setAttribute("aantalRijen", AANTAL_RIJEN);
+			List<Artikel> artikels = artikelService.findByNaamContains(naam, vanafRij, AANTAL_RIJEN + 1);
+			if (artikels.size() <= AANTAL_RIJEN) {
+				request.setAttribute("laatstePagina", true);
+			} else {
+				artikels.remove(AANTAL_RIJEN);
+			}
 			if (fouten.isEmpty()) {
 				request.setAttribute("artikels", artikels);
 			} else {
