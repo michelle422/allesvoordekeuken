@@ -2,15 +2,24 @@ package be.vdab.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+
+import be.vdab.valueObjects.Korting;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -24,11 +33,16 @@ public abstract class Artikel implements Serializable {
 	private String naam;
 	private BigDecimal aankoopprijs;
 	private BigDecimal verkoopprijs;
+	@ElementCollection
+	@CollectionTable(name = "kortingen", joinColumns = @JoinColumn(name = "artikelid"))
+	@OrderBy("vanafAantal")
+	private Set<Korting> kortingen;
 	
 	public Artikel(String naam, BigDecimal aankoopprijs, BigDecimal verkoopprijs) {
 		setNaam(naam);
 		setAankoopprijs(aankoopprijs);
 		setVerkoopprijs(verkoopprijs);
+		kortingen = new LinkedHashSet<>();
 	}
 	
 	protected Artikel() {
@@ -47,6 +61,10 @@ public abstract class Artikel implements Serializable {
 		return verkoopprijs;
 	}
 	
+	public Set<Korting> getKortingen() {
+		return Collections.unmodifiableSet(kortingen);
+	}
+
 	public static boolean isNaamValid(String naam) {
 		return naam != null && !naam.trim().isEmpty();
 	}
