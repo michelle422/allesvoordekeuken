@@ -10,8 +10,9 @@ import javax.persistence.Entity;
 public class NonFoodArtikel extends Artikel {
 	private static final long serialVersionUID = 1L;
 	private int garantie;
-	public NonFoodArtikel(String naam, BigDecimal aankoopprijs, BigDecimal verkoopprijs, int garantie) {
-		super(naam, aankoopprijs, verkoopprijs);
+	public NonFoodArtikel(String naam, BigDecimal aankoopprijs, BigDecimal verkoopprijs, int garantie, 
+				Artikelgroep artikelgroep) {
+		super(naam, aankoopprijs, verkoopprijs, artikelgroep);
 		setGarantie(garantie);
 	}
 	protected NonFoodArtikel() {

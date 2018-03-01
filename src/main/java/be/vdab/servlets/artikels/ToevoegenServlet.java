@@ -12,9 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import be.vdab.entities.Artikel;
+import be.vdab.entities.Artikelgroep;
 import be.vdab.entities.FoodArtikel;
 import be.vdab.entities.NonFoodArtikel;
 import be.vdab.services.ArtikelService;
+import be.vdab.services.ArtikelgroepService;
 import be.vdab.util.StringUtils;
 
 /**
@@ -26,12 +28,13 @@ public class ToevoegenServlet extends HttpServlet {
 	private static final String VIEW = "/WEB-INF/JSP/artikels/toevoegen.jsp";
 	private static final String REDIRECT_URL = "%s/artikels/zoekenopnummer.htm?id=%d";
 	private final transient ArtikelService artikelService = new ArtikelService();
+	private final transient ArtikelgroepService artikelgroepService = new ArtikelgroepService();
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		request.setAttribute("artikelgroepen", artikelgroepService.findAll());
 		request.getRequestDispatcher(VIEW).forward(request, response);
 	}
 
@@ -100,13 +103,17 @@ public class ToevoegenServlet extends HttpServlet {
 					fouten.put("soort", "maak een keuze");
 			}
 		}
-		
+		String artikelgroepId = request.getParameter("artikelgroepen");
+		if (artikelgroepId == null) {
+			fouten.put("artikelgroepen", "verplicht");
+		}
 		if (fouten.isEmpty()) {
 			Artikel artikel;
+			Artikelgroep artikelgroep = artikelgroepService.read(Long.parseLong(artikelgroepId)).get();
 			if ("F".equals(soort)) {
-				artikel = new FoodArtikel(naam, aankoopprijs, verkoopprijs, houdbaarheid);
+				artikel = new FoodArtikel(naam, aankoopprijs, verkoopprijs, houdbaarheid, artikelgroep);
 			} else {
-				artikel = new NonFoodArtikel(naam, aankoopprijs, verkoopprijs, garantie);
+				artikel = new NonFoodArtikel(naam, aankoopprijs, verkoopprijs, garantie, artikelgroep);
 			}
 			artikelService.create(artikel);
 			response.sendRedirect(response.encodeRedirectURL(String.format(REDIRECT_URL, request.getContextPath(), artikel.getId())));

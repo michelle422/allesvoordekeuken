@@ -19,4 +19,9 @@
  		select a from Artikel a order by a.naam
  	</query>
  </named-query>
+ <named-query name="Artikelgroep.findAll">
+ 	<query>
+ 		select ag from Artikelgroep ag order by ag.naam
+ 	</query>
+ </named-query>
 </entity-mappings>

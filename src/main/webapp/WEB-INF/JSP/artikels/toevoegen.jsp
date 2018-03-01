@@ -47,6 +47,15 @@
 				<input name="garantie" value="${param.garantie}" id='garantie' 
 					type="number" min="0" autofocus>
 			</label>
+			<label>Artikelgroep: <span>${fouten.artikelgroepen}</span>
+				<select name='artikelgroepen' size='${5}' required>
+					<c:forEach items="${artikelgroepen}" var="artikelgroep">
+						<option value='<c:out value="${artikelgroep.id}"/>'
+						${artikelgroep.id == param.artikelgroepen ? 'selected' : ''}>
+						${artikelgroep.naam}</option>
+					</c:forEach>
+				</select>
+			</label>
 			<input type="submit" value='Toevoegen' id='toevoegknop'>
 		</form>
 		<script>
